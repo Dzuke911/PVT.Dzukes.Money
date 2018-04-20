@@ -1,0 +1,54 @@
+﻿@model RegistrationModel
+@{
+    Layout = "AuthorizationLayout";
+    ViewData["Title"] = "SignIn";
+}
+
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center"><h3>Registration</h3></div>
+                <div class="panel-body">
+                    <form id="RegistrationForm" asp-action="RegistrationFormAction" asp-controller="Account">
+                        <div class="text-danger text-center small">@ViewData["Error"]</div>
+                        <div class="form-group">
+                            <label><small>Login</small></label>
+                            <span asp-validation-for="Login" class="text-danger small"></span>
+                            <input type="text" asp-for="Login" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><small>Email</small></label>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <input type="text" asp-for="Email" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><small>Password</small></label>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                            <input type="password" asp-for="Password" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><small>Confirm password</small></label>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            <input type="password" asp-for="ConfirmPassword" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <input id="RegisterButton" class="btn btn-primary form-control" type="submit" name="Register" value="Register" />
+                        </div>
+                    </form>
+                    <div>
+                        <b><small>Already registered?</small></b>
+                        <a href="~/Account/Login"><small>Sign in!</small></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<span id="SelectedMenuItem" style="display: none;" value="#RegisterLi" />
+
+@section Scripts{
+    
+}

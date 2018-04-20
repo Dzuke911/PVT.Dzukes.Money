@@ -1,0 +1,56 @@
+﻿@using System.Security.Claims;
+@using PVT.Money.Shell.Web.Extensions;
+@using PVT.Money.Business.Enums;
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "MainLayout";
+}
+
+<nav class="navbar navbar-primary navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a id="IndedxLi" asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Home</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                @*@if (User.IsInRole("Admin"))
+                    {
+                        <li id="UsersManagementLi"><a asp-area="" asp-controller="Main" asp-action="UsersManagement">Admin: users</a></li>
+                        <li id="RolesManagementLi"><a asp-area="" asp-controller="Main" asp-action="RolesManagement">Admin: roles</a></li>
+                    }*@
+                @if (User.IsInPermission(RolePermissions.ManageUsers))
+                {
+                    <li id="UsersManagementLi"><a asp-area="" asp-controller="Main" asp-action="UsersManagement">Admin: users</a></li>
+                }
+                @if (User.IsInPermission(RolePermissions.ManageRoles))
+                {
+                    <li id="RolesManagementLi"><a asp-area="" asp-controller="Main" asp-action="RolesManagement">Admin: roles</a></li>
+                }
+                <li id="HistoryLi"><a asp-area="" asp-controller="Main" asp-action="History">History</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="avatar">
+                        <img src= @Url.Action("GetUserAvatar", "Main", new { userName = User.Identity.Name }) class="img-circle"/>                
+                </li>
+                <li id="PersonalDataLi"><a asp-area="" asp-controller="Main" asp-action="PersonalData">@User.GetUserName()</a></li>
+                <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container body-content">
+    @RenderBody()
+    <hr />
+    <footer>
+        <p>&copy; 2018 Dzuke</p>
+    </footer>
+</div>
+
+@section Scripts{
+    @RenderSection("Scripts", required: false)
+}

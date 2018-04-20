@@ -1,0 +1,185 @@
+﻿@model PersonalDataModel
+@{
+    ViewData["Title"] = "PersonalData";
+    Layout = "MainLayout";
+}
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+            <div id="PersonalDataDiv" class="panel panel-primary">
+                <div class="panel-heading text-center"><h3>Personal data:</h3></div>
+                <div id="PersonalDataBodyShow" class="panel-body">
+                    <table class="table table-bordered col-sm-12">
+                        <tr>
+                            <td rowspan="4" class="col-sm-4">
+                                <img src="@Url.Action( "GetUserPhoto", "Main", new { userName = User.Identity.Name })" alt="Person Image" class="centerimg" />
+                            </td>
+                            <td class="col-sm-8"><b>Login: </b>@Model.Login</td>
+                        </tr>
+                        <tr>
+                            <td><b>First name: </b>@Model.FirstName</td>
+                        </tr>
+                        <tr>
+                            <td><b>Last name: </b>@Model.LastName</td>
+                        </tr>
+                        <tr>
+                            <td><b>Email: </b>@Model.Email</td>
+                        </tr>
+                    </table>
+                    <br />
+                    <span small><b>Birth date:</b></span>
+                    <table class="table table-bordered col-sm-12">
+                        <tr>
+                            <td class="small col-sm-3"><b>Year: </b>@Model.BirthYear</td>
+                            <td class="small col-sm-6"><b>Month: </b>@Model.BirthMonthStr</td>
+                            <td class="small col-sm-3"><b>Day: </b>@Model.BirthDay</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><b>Gender: </b>@Model.Gender</td>
+                        </tr>
+                    </table>
+                    <br />
+                    <table class="table table-bordered col-sm-12">
+                        <tr>
+                            <td><b>Address: </b>@Model.Address</td>
+                        </tr>
+                        <tr>
+                            <td><b>Phone: </b>@Model.Phone</td>
+                        </tr>
+                    </table>
+                    <div>
+                        <button id="EditPersonalDataButton" type="button" class="btn btn-primary form-control"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+                    </div>
+                    <div>
+                        <button id="ChangePasswordShowButton" type="button" class="btn btn-primary form-control"><span class="glyphicon glyphicon-lock"></span> Change password</button>
+                    </div>
+                </div>
+
+                <div id="PersonalDataBodyEdit" class="panel-body" style="display: none;">
+                    <form method="post" enctype="multipart/form-data" asp-action="PersonalDataFormAction" asp-controller="Main">
+                        <div class="col-sm-12 errorheight">
+                            <span asp-validation-for="Login" class="text-danger small errornowrap"></span>
+                            <span asp-validation-for="Email" class="text-danger small errornowrap"></span>
+                            <span asp-validation-for="BirthYear" class="text-danger small errornowrap"></span>
+                            <span id="SignOutWarning" class="text-warning small errornowrap" style="display: none;">The login changing leads to new sign in. </span>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">Login</span>
+                            <input id="Login" attrBaseLogin="@Model.Login" type="text" class="form-control" asp-for="Login" value="@Model.Login" />
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">First name</span>
+                            <input id="FirstName" type="text" class="form-control" asp-for="FirstName" value="@Model.FirstName" />
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">Last name</span>
+                            <input id="LastName" type="text" class="form-control" asp-for="LastName" value="@Model.LastName" />
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">Email</span>
+                            <input id="Email" type="text" class="form-control" asp-for="Email" value="@Model.Email" />
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">Photo</span>
+                            <input asp-for="Photo" type="file" class="form-control" name="Photo" value="">
+                        </div>
+                        <br />
+
+                        <table class="table table-bordered col-sm-12">
+                            <tr>
+                                <td colspan="3" class="input-group-addon">
+                                    <span class="small text-center">Birth date:</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-sm-4">
+                                    <input type="text" class="form-control" asp-for="BirthYear" value="@Model.BirthYear" />
+                                </td>
+                                <td class="col-sm-5">
+                                    <select type="text" class="form-control" asp-for="BirthMonth">
+                                        <option value="1">January</option>
+                                        <option value="2">February</option>
+                                        <option value="3">March</option>
+                                        <option value="4">April</option>
+                                        <option value="5">May</option>
+                                        <option value="6">June</option>
+                                        <option value="7">July</option>
+                                        <option value="8">August</option>
+                                        <option value="9">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                </td>
+                                <td class="col-sm-3">
+                                    <select type="number" class="form-control" asp-for="BirthDay">
+                                        @for (int i = 1; i < 32; i++)
+                                {
+                                    <option value="@i">@i</option>
+                        }
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="input-group form-inline">
+                            <span class="input-group-addon mypxmin">Gender: </span>
+                            <span class="form-control">
+                                <span class="radio-inline">
+                                    <input id="GenderMale" type="radio" asp-for="Gender" value="male"><label for="GenderMale" class="small">Male  </label>
+                                </span>
+                                <span class="radio-inline">
+                                    <input id="GenderFemale" type="radio" asp-for="Gender" value="female"><label for="GenderFemale" class="small">Female</label>
+                                </span>
+                            </span>
+                        </div>
+
+                        <br />
+
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">Address</span>
+                            <input id="Address" type="text" class="form-control" asp-for="Address" value="@Model.Address" />
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon mypxmin">Phone</span>
+                            <input id="Phone" type="text" class="form-control" asp-for="Phone" value="@Model.Phone" />
+                        </div>
+                        <br />
+                        <input id="EditPersonalDataSubmit" type="submit" class="btn btn-primary form-control" name="EditPersonalDataSubmit" value="Save" />
+                    </form>
+                </div>
+            </div>
+            <div id="PasswordChangeDiv" class="panel panel-primary" style="display: none;">
+                <div class="panel-heading text-center"><h3>Password changing</h3></div>
+                <div class="panel-body">
+                    <form asp-action="ChangePasswordFormAction" asp-controller="Main">
+                        <div class="form-group">
+                            <label><small>Current password</small></label>
+                            <span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger small"></span>
+                            <input type="password" asp-for="ChangePassword.CurrentPassword" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><small>New password</small></label>
+                            <span asp-validation-for="ChangePassword.Password" class="text-danger small"></span>
+                            <input type="password" asp-for="ChangePassword.Password" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><small>Confirm new password</small></label>
+                            <span asp-validation-for="ChangePassword.ConfirmPassword" class="text-danger small"></span>
+                            <input type="password" asp-for="ChangePassword.ConfirmPassword" class="form-control" />
+                        </div>
+                        <input id="ChangePasswordSubmit" type="submit" class="btn btn-primary form-control" name="ChangePasswordSubmit" value="Confirm password changing" />
+                    </form>
+                </div>
+            </div>
+            <h4 id="ImageErrorDiv" class="text-danger text-center">@ViewData["ImageError"]</h4>
+            <h3 id="PasswordChangingMessage" class="@ViewData["PassChangeClass"] text-center">@ViewData["PassChangeMessage"]</h3>
+        </div>
+    </div>
+</div>
+<span id="SelectedMenuItem" style="display: none;" value="#PersonalDataLi" />
+
+@section Scripts{
+    <script src="~/js/PersonalDataScripts.js"></script>
+}

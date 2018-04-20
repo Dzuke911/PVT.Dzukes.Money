@@ -1,0 +1,386 @@
+﻿@model IndexModel
+@using PVT.Money.Shell.Web.Extensions;
+@using PVT.Money.Business.Enums;
+@using PVT.Money.Business;
+@{
+    Layout = "MainLayout";
+    ViewData["Title"] = "Index";
+    const string dropId = "_drop";
+    const string accId = "_acc";
+    string buffer1 = "";
+    string buffer2 = "";
+}
+
+<script src="~/js/AccDrag.js"></script>
+<br />
+<div class="container">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading text-center">
+                <h3>Accounts</h3>
+            </div>
+            <div id="IndexAccountPannel" class="panel-body">
+                @foreach (Account acc in Model.Accounts)
+                {
+                    buffer1 = acc.AccountID + dropId;
+                    buffer2 = acc.AccountID + accId;
+                    <div id="@buffer1" class="col-sm-3 col-md-2 dropwell" ondrop="drop(event)" ondragover="allowDrop(event)" accatr="@acc.AccountID">
+                        <div id="@buffer2" class="well well-sm accountwell" draggable="true" accatr="@acc.AccountID" ondragstart="drag(event)">
+                            <h5>@acc.AccountID</h5>
+                            <h4>@acc.Money.Amount.ToString("N2")<span style="float: right"><kbd>@acc.Money.Curr.CurrToString()</kbd></span></h4>
+                        </div>
+                    </div>
+                }
+
+                @if (User.IsInPermission(RolePermissions.CreateAccount))
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell">
+                            <button id="CreateAccountButton" type="button" class="btn btn-primary acc-btn">Create account <br /><span style="font-size:3.0em;" class="glyphicon glyphicon-plus-sign"></span></button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell">
+                            <button type="button" class="btn btn-default acc-btn disabled" data-toggle="tooltip" title="Forbidden. Contact administrator.">Create account<br /><span style="font-size:3.0em;" class="glyphicon glyphicon-plus-sign"></span></button>
+                        </div>
+                    </div>
+                }
+
+                @if (User.IsInPermission(RolePermissions.PutToAccount))
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell" draggable="true" accatr="Deposit-drag" ondragstart="drag(event)" data-toggle="tooltip" data-placement="bottom" title="Drag to account">
+                            <div class="btn btn-primary acc-btn">Make deposit <br /><span style="font-size:3.0em;" class="glyphicon glyphicon-import"></span></div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell">
+                            <div class="btn btn-default acc-btn disabled" data-toggle="tooltip" data-placement="bottom" title="Forbidden. Contact administrator.">Make deposit<br /><span style="font-size:3.0em;" class="glyphicon glyphicon-import"></span></div>
+                        </div>
+                    </div>
+                }
+
+                @if (User.IsInPermission(RolePermissions.WithdrawFromAccount))
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell" ondrop="drop(event)" ondragover="allowDrop(event)" accatr="Withdraw-drop" data-toggle="tooltip" data-placement="bottom" title="Drag account here">
+                            <div class="btn btn-primary acc-btn">Withdraw<br /><span style="font-size:3.0em;" class="glyphicon glyphicon-export"></span></div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell">
+                            <div class="btn btn-default acc-btn disabled" data-toggle="tooltip" data-placement="bottom" title="Forbidden. Contact administrator.">Withdraw<br /><span style="font-size:3.0em;" class="glyphicon glyphicon-export"></span></div>
+                        </div>
+                    </div>
+                }
+
+                @if (User.IsInPermission(RolePermissions.DeleteAccount))
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell" ondrop="drop(event)" ondragover="allowDrop(event)" accatr="Delete-drop" data-toggle="tooltip" data-placement="bottom" title="Drag account here">
+                            <div class="btn btn-primary acc-btn">Delete account<br /><span style="font-size:3.0em;" class="glyphicon glyphicon-trash"></span></div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-md-2 fakedropwell">
+                        <div class="accountwell">
+                            <div class="btn btn-default acc-btn disabled" data-toggle="tooltip" data-placement="bottom" title="Forbidden. Contact administrator.">Delete account<br /><span style="font-size:3.0em;" class="glyphicon glyphicon-trash"></span></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="AccountMenuButtons" class="col-sm-2 col-md-1">
+        </div>
+        <div id="AccountFormsDiv" class="col-sm-10">
+            <div id="CreateAccountFormDiv" style="display: none;">
+                <div class="col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading text-center">
+                            <h5>Account creation</h5>
+                        </div>
+                        <div class="panel-body">
+                            <form asp-action="CreateAccountFormAction" asp-controller="Home">
+                                <div class="well well-sm">
+                                    <span asp-validation-for="AccountName" class="text-danger text-center small"></span>
+
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Account name</span>
+                                        <input type="text" class="form-control" asp-for="AccountName" value="" />
+                                    </div>
+
+                                    <br />
+                                    <select type="text" asp-for="Currency" class="selectkbd">
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="GBP">GBP</option>
+                                        <option value="CHF">CHF</option>
+                                        <option value="JPY">JPY</option>
+                                        <option value="CAD">CAD</option>
+                                        <option value="AUD">AUD</option>
+                                    </select>
+
+                                    <br /><br />
+                                    <input id="CreateAccountSubmit" type="submit" class="btn btn-primary form-control" name="CreateAccount" value="Create" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="MakeDepositAccountFormDiv" style="display: none;">
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading text-center">
+                        <h5>Deposit</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            @if (User.IsInPermission(RolePermissions.PutToAccount))
+                            {
+                                <form asp-action="MakeDepositAccountFormAction" asp-controller="Home">
+                                    <div>
+                                        <input asp-for="DepositAccountName" type="hidden" />
+                                        <div class="col-sm-3 col-md-2 nopadding">
+                                            <div class="well well-sm transactionwell" style="text-align: center;">
+                                                <span style="font-size:5.0em;" class="glyphicon glyphicon-user"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-8">
+                                            <div class="row">
+                                                <div style="text-align:left" class="moveArrow">
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-arrow-right"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-euro"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-usd"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-gbp"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-yen"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-ruble"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-btc"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-arrow-right"></span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="DepositAmount" class="text-danger text-center small"></span>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon mypxminlong text-capitalize"><b>Deposit amount</b></span>
+                                                    <input type="text" class="form-control" asp-for="DepositAmount" value="" />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <select type="text" asp-for="DepositCurrency" class="selectkbd">
+                                                    <option value="USD">USD</option>
+                                                    <option value="EUR">EUR</option>
+                                                    <option value="GBP">GBP</option>
+                                                    <option value="CHF">CHF</option>
+                                                    <option value="JPY">JPY</option>
+                                                    <option value="CAD">CAD</option>
+                                                    <option value="AUD">AUD</option>
+                                                </select>
+                                            </div>
+                                            <br /><br />
+                                            <input id="MakeDepositAccountSubmit" type="submit" class="btn btn-primary form-control" name="MakeDeposit" value="Confirm depositing" />
+                                        </div>
+                                        <div class="col-sm-3 col-md-2 nopadding">
+                                            <div id="DepositToAcc" class="well well-sm transactionwell">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <h4 class="text-center">Deposit operation is forbidden for you. Contact administrator.</h4>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="TransactToAccountFormDiv" style="display: none;">
+                <div class="panel panel-primary">
+                    <div class="panel-heading text-center">
+                        <h5>Transaction</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            @if (User.IsInPermission(RolePermissions.Transact))
+                            {
+                                <form asp-action="TransactToAccountFormAction" asp-controller="Home">
+                                    <div>
+                                        <span asp-validation-for="TransactToAccount.AccountFromName" class="text-danger text-center small"></span>
+                                        <span asp-validation-for="TransactToAccount.Amount" class="text-danger text-center small"></span>
+                                        <span asp-validation-for="TransactToAccount.AccountToName" class="text-danger text-center small"></span>
+                                        <input asp-for="TransactToAccount.AccountFromName" type="hidden" />
+                                        <input asp-for="TransactToAccount.AccountToName" type="hidden" />
+                                        <span id="TransactionCheckAjaxPath" style="display: none;">@Url.Action("TransactionCheck", "Home")</span>
+                                        <div class="col-sm-3 col-md-2 nopadding">
+                                            <div id="TransactionFromAcc" class="well well-sm transactionwell">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-8">
+                                            <div class="row">
+                                                <div style="text-align:left" class="moveArrow">
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-arrow-right"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-euro"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-usd"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-gbp"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-yen"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-ruble"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-btc"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-arrow-right"></span>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <span class="input-group-addon mypxminlong text-capitalize"><b>Transaction amount</b></span>
+                                                <input type="text" class="form-control" asp-for="TransactToAccount.Amount" value="" />
+                                            </div>
+                                            <br />
+                                            <button id="CalculateTransactionButton" type="button" class="btn btn-primary form-control">Calculate transaction</button>
+                                            <input id="TransactToAccountSubmit" type="submit" class="btn btn-primary form-control" name="TransactToAccount" value="Confirm transaction" style="display: none;" />
+                                        </div>
+                                        <div class="col-sm-3 col-md-2 nopadding">
+                                            <div id="TransactionToAcc" class="well well-sm transactionwell">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <h4 class="text-center">Transaction operation is forbidden for you. Contact administrator.</h4>
+                            }
+                        </div>
+                        <div>
+                            <br />
+                            <div id="TransactionResultSameAccounts" class="well well-sm" style="display: none;"><h4 class="text-danger text-center">Select two different accounts for transaction</h4></div>
+                            <div id="TransactionWaitPlease" class="well well-sm" style="display: none;"><h4 class="text-info text-center">Wait a while please...</h4></div>
+                            <div id="TransactionResultCantParse" class="well well-sm" style="display: none;"><h4 class="text-danger text-center">Enter a valid transaction amount (example: 123,4567)</h4></div>
+                            <div id="TransactionResultNotEnough" class="well well-sm" style="display: none;">
+                                <h4 class="text-danger text-center">Insufficient funds.</h4>
+                                <br />
+                                <h5 id="TResultMaxAmount" class="text-danger text-center"></h5>
+                            </div>
+                            <div id="TransactionResultSuccess" class="well well-sm" style="display: none;">
+                                <h4 class="text-success text-center">Transaction will result to:</h4>
+                                <h5 id="TResultSended" class="text-info text-center"></h5>
+                                <h5 id="TResultCommission" class="text-info text-center"></h5>
+                                <h5 id="TResultRecieve" class="text-info text-center"></h5>
+                                <h5 id="TResultRest" class="text-info text-center"></h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="WithdrawFromAccountFormDiv" style="display: none;">
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading text-center">
+                        <h5>Withdraw</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            @if (User.IsInPermission(RolePermissions.WithdrawFromAccount))
+                            {
+                                <form asp-action="WithdrawFromAccountFormAction" asp-controller="Home">
+                                    <div>
+                                        <input asp-for="Withdraw.AccountName" type="hidden" />
+                                        <div class="col-sm-3 col-md-2 nopadding">
+                                            <div class="well well-sm transactionwell" style="text-align: center;">
+                                                <span style="font-size:5.0em;" class="glyphicon glyphicon-user"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-8">
+                                            <div class="row">
+                                                <div class="moveArrowLeft">
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-arrow-left"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-euro"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-usd"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-gbp"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-yen"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-ruble"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-btc"></span>
+                                                    <span style="font-size:2.0em;" class="glyphicon glyphicon-arrow-left"></span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Withdraw.Amount" class="text-danger text-center small"></span>
+                                            <div class="col-sm-10 col-sm-offset-1">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon mypxminlong text-capitalize"><b>Withdraw amount</b></span>
+                                                    <input type="text" class="form-control" asp-for="Withdraw.Amount" value="" />
+                                                </div>
+                                            </div>
+                                            <br /><br />
+                                            <input id="WithdrawFromAccountSubmit" type="submit" class="btn btn-primary form-control" name="MakeDeposit" value="Confirm withdrawing" />
+                                        </div>
+                                        <div class="col-sm-3 col-md-2 nopadding">
+                                            <div id="WithdrawFromAcc" class="well well-sm transactionwell">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <h4 class="text-center">Withdraw operation is forbidden for you. Contact administrator.</h4>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="DeleteAccountFormDiv" style="display: none;">
+                <div class="col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading text-center">
+                            <h5>Account deleting</h5>
+                        </div>
+                        <div class="panel-body">
+                            <form asp-action="DeleteAccountFormAction" asp-controller="Home">
+                                <div class="well well-sm">
+                                    <span asp-validation-for="DeleteAccountName" class="text-danger text-center small"></span>
+                                    <input asp-for="DeleteAccountName" type="hidden" />
+                                    <h2 id="AccToDeleteName" class="text-capitalize col-sm-11 col-sm-offset-1"></h2>
+                                    <br />
+                                    <h3 id="AccToDeleteAmount" class="text-capitalize col-sm-9"></h3>
+                                    <h3 id="AccToDeleteCurr" class="text-capitalize text-center col-sm-3 selectkbd"></h3>
+
+                                    <br /><br />
+                                    <input id="DeleteAccountSubmit" type="submit" class="btn btn-danger form-control" name="DeleteAccount" value="Delete" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @{
+                string amClass = "text-success";
+                if (Model.ActivityMessageError == true)
+                {
+                    amClass = "text-danger";
+                }
+            }
+            <h3 id="AccountActivityMessage" class="@amClass text-center">@Model.ActivityMessage</h3>
+        </div>
+    </div>
+</div>
+<span id="SelectedMenuItem" style="display: none;" value="#IndexLi" />
+
+@section Scripts{
+    <script src="~/js/TransactionChecker.js"></script>
+    <script src="~/js/IndexScripts.js"></script>
+    <script src="~/js/TooltipsEnabled.js"></script>
+}

@@ -1,0 +1,96 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Authentication
+@using PVT.Money.Business.Authorization
+@model SignInModel
+@inject IAuthentication authentication;
+@{
+    Layout = "AuthorizationLayout";
+    ViewData["Title"] = "Login";
+}
+
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center"><h3>Login Form</h3></div>
+                <div class="panel-body">
+                    <form asp-action="SignInFormAction" asp-controller="Account">
+                        <div class="text-danger text-center small">@ViewData["WrongSignIn"]</div>
+                        <div class="form-group">
+                            <label><small>Login or Email</small></label>
+                            <span asp-validation-for="Login" class="text-danger small"></span>
+                            <input type="text" asp-for="Login" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label><small>Password</small></label>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" asp-for="RememberMe"><span><b> Remember me?</b></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn btn-primary form-control" type="submit" name="SignIn" value="Sign in" />
+                        </div>
+                    </form>
+
+                    <hr />
+
+                    <div>
+                        <h5><b>Use another service to log in.</b></h5>
+                        @{
+
+                            string picture = "";
+                            var loginProviders = (await authentication.GetExternalAuthenticationSchemesAsync()).ToList();
+                            if (loginProviders.Count == 0)
+                            {
+                                <div>
+                                    <p>
+                                        There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+                                        for details on setting up this ASP.NET application to support logging in via external services.
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                                    <div>
+                                        <p>
+                                            @foreach (var provider in loginProviders)
+                                            {
+                                                if (provider.Name == "Google") { picture = Url.Content("~/images/GoogleLogo.png"); }
+                                                if (provider.Name == "Facebook") { picture = Url.Content("~/images/FacebookLogo.png"); }
+                                                if (provider.Name == "Twitter") { picture = Url.Content("~/images/TwitterLogo.png"); }
+                                                <button type="submit" class="btn btn-default btn-provider" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><img src=@picture /></button>
+                                            }
+                                        </p>
+                                    </div>
+                                </form>
+                            }
+                        }
+                    </div>
+
+                    <hr />
+
+                    <div>
+                        <b><small>Forgot your password?</small></b>
+                        <a href="@Url.Action("Passwordrecovery","Account")"><small>Click here.</small></a>
+                    </div>
+                    <div>
+                        <b><small class="b">No account?</small></b>
+                        <a href="@Url.Action("Registration","Account")"><small>Register!</small></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<span id="SelectedMenuItem" style="display: none;" value="#SignInLi" />
+
+@section Scripts{
+
+}

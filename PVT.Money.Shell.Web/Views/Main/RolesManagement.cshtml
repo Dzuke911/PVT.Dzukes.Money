@@ -1,0 +1,78 @@
+﻿@model RolesManagementModel
+@using PVT.Money.Business.Admin;
+@using PVT.Money.Business;
+@{
+    Layout = "MainLayout";
+    ViewData["Title"] = "RolesManagement";
+}
+
+<br />
+<div class="container" id="RolesManagementPage">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center"><h4>New role creation</h4></div>
+                <div class="panel-body">
+                    <form id="RolesCreationForm" asp-action="RolesManagementCreateAction" asp-controller="Main">
+                        <div class="col-sm-12">
+                            <label small>New role name:</label>
+                            <span asp-validation-for="NewRole" class="text-danger text-center small"></span>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" asp-for="NewRole" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                            <input id="CreateRoleButton" class="btn btn-primary form-control" type="submit" name="CreateRole" value="Create role" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center"><h4>Permissions assignment</h4></div>
+                <div class="panel-body">
+                    <form id="PermissionsForm" asp-action="RolesManagementPermissionsAction" asp-controller="Main">
+                        <div class="col-sm-12">
+                            <label small for="SelectedRole">Select role:</label>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <select type="text" class="form-control" asp-for="SelectedRole">
+                                @{
+                                    foreach (UserRole role in Model.Roles)
+                                    {
+                                        <option id="@role.Name" attrPerms="@role.Permissions" value="@role.Name">@role.Name</option>
+                                    }
+                                }
+                            </select>
+                            <input hidden type="text" asp-for="NewPermissions" value="xxx">
+                        </div>
+                        <div class="col-sm-6">
+                            <input id="SaveRoleButton" class="btn btn-primary form-control" type="submit" name="SaveRole" value="Save role" />
+                        </div>
+                        <div class="col-sm-12">
+                            <p id="testp"></p>
+                        </div>
+                        <div class="col-sm-12">
+                            <div id="addedPermissions" class="col-sm-6">
+                                <label class="text-center" for="addedPermissions">Used permissions:</label>
+                            </div>
+                            <div id="removedPermissions" class="col-sm-6">
+                                <label class="text-center" for="removedPermissions">Available permissions:</label>
+                                @{
+                                    foreach (string permission in Model.Permissions)
+                                    {
+                                        <div id="@permission" class="btn btn-default btn-xs col-sm-12" attrUsed="false" value="@permission">@permission</div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<span id="SelectedMenuItem" style="display: none;" value="#RolesManagementLi" />
+
+@section Scripts{
+
+}

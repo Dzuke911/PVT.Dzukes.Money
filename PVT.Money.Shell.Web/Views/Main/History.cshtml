@@ -1,0 +1,77 @@
+﻿@model HistoryModel
+@using PVT.Money.Business.Admin;
+@using PVT.Money.Business.Logger;
+@using PVT.Money.Business;
+@{
+    Layout = "MainLayout";
+    ViewData["Title"] = "History";
+}
+
+<br />
+<div id="HistoryPage" class="container">
+    <div class="row">
+        <div class="panel panel-default col-md-6">
+            <form id="HistoryForm" asp-action="HistoryFormAction" asp-controller="Main">
+                <div class="col-sm-12">
+                    <div class="col-sm-5">
+                        <label for="DateFrom">Date from:</label>
+                        <span asp-validation-for="DateFrom" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-5">
+                        <label for="DateTo">Date to:</label>
+                        <span asp-validation-for="DateTo" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group col-sm-5">
+                        <input type="date" asp-for="DateFrom" class="form-control" value="@Model.DateFrom.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="form-group col-sm-5">
+                        <input type="date" asp-for="DateTo" class="form-control" value="@Model.DateTo.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <button id="RefreshHistoryButton" type="submit" class="btn btn-primary form-control" name="RefreshHistory">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            <div style="padding-left:10px; padding-right:10px">
+                <br />
+                <table id="HistoryTable" class="display table table-striped table-bordered table-hover" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Event</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (LogEvent log in Model.Events)
+                        {
+                            <tr>
+                                <td small>@log.UserName</td>
+                                <td data-order=@log.Date.Ticks small>@log.Date.ToShortDateString()</td>
+                                <td data-order=@log.Date.Ticks small>@log.Date.ToLongTimeString()</td>
+                                <td small>@log.Message</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<span id="SelectedMenuItem" style="display: none;" value="#HistoryLi" />
+
+@section Scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/DataTables/DataTables-1.10.16/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+    <script src="~/js/HistoryScripts.js"></script>
+}

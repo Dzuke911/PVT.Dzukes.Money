@@ -1,0 +1,152 @@
+﻿body {
+}
+
+.input-group-addon.mypxmin {
+    min-width: 95px;
+    text-align: left;
+}
+
+.input-group-addon.mypxminlong {
+    min-width: 165px;
+    text-align: left;
+}
+
+div.errorheight {
+    overflow: auto;
+    float: left;
+    height: 60px;
+}
+
+span.errornowrap {
+    white-space: nowrap;
+}
+
+.accountwell {
+    margin: 0px 0px 0px 0px;
+}
+
+.accountwellselected {
+    border: 1px ridge #337ab7;
+    background-color: #d6f6fc;
+    box-shadow: inset 0px 0px 3px 3px #337ab7;
+}
+
+.dropwell{
+    margin-right:10px;
+    margin-bottom:10px;
+    padding-left:0px;
+    padding-right:0px;
+}
+
+.btn-provider{
+    padding: 6px 6px;
+}
+
+.transactionwell{
+    margin: 0px 0px 0px 0px;
+    min-height: 100px;
+}
+
+.nopadding {
+    padding: 0px 0px 0px 0px;
+}
+
+.moveArrow {
+    position: relative;
+    text-align: left;
+    animation-name: moveArrow;
+    animation-duration: 2.3s ;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes moveArrow {
+    0% {
+        left: 0px;
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    85% {
+        opacity: 1;
+    }
+
+    100% {
+        left: 300px;
+        opacity: 0;
+    }
+}
+
+.creationwell {
+    margin: 0px 0px 0px 0px;
+    min-height: 150px;
+    min-width:330px;
+}
+
+.selectkbd {
+    padding: 2px 4px;
+    color: #fff;
+    background-color: #333;
+    border-radius: 3px;
+    font-size: large;
+    font-weight: bold;
+    float: right;
+}
+
+.acc-btn {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.moveArrowLeft {
+    position: relative;
+    text-align: right;
+    animation-name: moveArrowLeft;
+    animation-duration: 2.3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes moveArrowLeft {
+    0% {
+        right: 0px;
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    85% {
+        opacity: 1;
+    }
+
+    100% {
+        right: 300px;
+        opacity: 0;
+    }
+}
+
+.fakedropwell {
+    margin-right: 10px;
+    margin-bottom: 14px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.avatar {
+    min-height: 50px;
+    min-width: 50px;
+    padding: 4px 4px 4px 4px;
+}
+
+.centerimg {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
